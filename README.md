@@ -1,34 +1,94 @@
-# secure-messenger-desktop
+# Secure Messenger Desktop 🛡️
 
-An Electron application with React and TypeScript
+## Overview
+Secure Messenger Desktop is a cross-platform communication client engineered for performance and privacy. Built with **TypeScript**, **Electron**, and **React**, it leverages a local **SQLite** database to ensure message persistence and high-speed data retrieval without relying on external cloud overhead for local state.
 
-## Recommended IDE Setup
+The architecture follows a strict separation of concerns, utilizing Electron's main process for heavy-duty database operations and a streamlined React frontend for a reactive user interface. By implementing **Redux Toolkit** and **Better-SQLite3**, the application handles complex data relationships and large message histories with minimal latency.
 
-- [VSCode](https://code.visualstudio.com/) + [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) + [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+## Features
+- **Local SQLite Persistence**: Uses `better-sqlite3` with optimized indexing for lightning-fast message history searches and chat retrieval.
+- **Type-Safe Architecture**: End-to-end TypeScript implementation ensures data integrity between the Main and Renderer processes.
+- **IPC Communication**: Secure Inter-Process Communication (IPC) handling for seamless interaction between the system-level backend and the UI.
+- **Modern UI Stack**: Built with React 19 and Material UI for a professional, responsive, and accessible user experience.
+- **Automated Update Pipeline**: Integrated with `electron-updater` for managed application lifecycle and deployment.
+- **Real-time Ready**: Built-in support for WebSockets (`ws`) to facilitate instant messaging synchronization.
 
-## Project Setup
+## Usage
 
-### Install
+### Local Database Interaction
+The core of the application is the `database.service.ts`, which manages chat data locally. For recruiters looking at the data layer, the service handles indexed queries to ensure O(1) or O(log n) retrieval times on message histories.
 
-```bash
-$ pnpm install
+**Seeding the Database**
+To initialize the application with development data, the `seedDatabase()` function can be triggered in the main process. It populates the SQLite tables with mock data for testing high-volume message scenarios.
+
+**Executing IPC Calls**
+Communication between the UI and the system is handled through the Preload script. You can trigger system events from the React components:
+```tsx
+const handlePing = () => {
+  window.electron.ipcRenderer.send('ping')
+}
 ```
 
-### Development
+### Build and Deployment
+The project is configured for multi-platform distribution. You can generate production-ready installers using the following scripts:
+- **Windows**: `npm run build:win` (Generates `.exe` via NSIS)
+- **MacOS**: `npm run build:mac` (Generates `.dmg`)
+- **Linux**: `npm run build:linux` (Generates `.AppImage` and `.deb`)
 
-```bash
-$ pnpm dev
+## Technical Specifications
+
+### Data Schemas
+
+**Chat Object**
+```json
+{
+  "id": "number (Primary Key)",
+  "title": "string",
+  "lastMessageAt": "number (Timestamp)",
+  "unreadCount": "number"
+}
 ```
 
-### Build
-
-```bash
-# For windows
-$ pnpm build:win
-
-# For macOS
-$ pnpm build:mac
-
-# For Linux
-$ pnpm build:linux
+**Message Object**
+```json
+{
+  "id": "number (Primary Key)",
+  "chatId": "number (Foreign Key)",
+  "ts": "number (Timestamp)",
+  "sender": "string",
+  "body": "string"
+}
 ```
+
+### IPC Endpoints
+#### [SEND] `ping`
+**Purpose**: Verifies communication between the renderer and main process.
+**Response**: Logs `pong` in the main process terminal.
+
+## Technologies Used
+
+| Technology | Purpose | Link |
+| --- | --- | --- |
+| Electron | Desktop Framework | [electronjs.org](https://www.electronjs.org/) |
+| React | UI Library | [react.dev](https://react.dev/) |
+| TypeScript | Type Safety | [typescriptlang.org](https://www.typescriptlang.org/) |
+| Better-SQLite3 | Local Database | [github.com](https://github.com/WiseLibs/better-sqlite3) |
+| Redux Toolkit | State Management | [redux-toolkit.js.org](https://redux-toolkit.js.org/) |
+| Vite | Build Tooling | [vitejs.dev](https://vitejs.dev/) |
+| Material UI | Component Library | [mui.com](https://mui.com/) |
+
+## Author Info
+I am a software engineer focused on building robust, scalable desktop and web applications. You can reach out to me or view more of my work through the links below:
+
+- **LinkedIn**: [Your Profile Name Here]
+- **X (Twitter)**: [@YourHandle]
+- **Portfolio**: [Your Portfolio Website]
+
+---
+
+![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
+![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
+![Electron.js](https://img.shields.io/badge/Electron-2B2E3A?style=for-the-badge&logo=electron&logoColor=9FEAF9)
+![SQLite](https://img.shields.io/badge/sqlite-%2307405e.svg?style=for-the-badge&logo=sqlite&logoColor=white)
+
+[![Readme was generated by Dokugen](https://img.shields.io/badge/Readme%20was%20generated%20by-Dokugen-brightgreen)](https://www.npmjs.com/package/dokugen)
