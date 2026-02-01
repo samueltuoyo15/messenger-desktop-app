@@ -1,0 +1,29 @@
+-- 1. Bootstrap 'lazy.nvim' (This downloads the plugin manager itself)
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+  vim.fn.system({ "git", "clone", "--filter=blob:none", "https://github.com/folke/lazy.nvim.git", "--branch=stable", lazypath })
+end
+vim.opt.rtp:prepend(lazypath)
+
+-- 2. Setup plugins
+require("lazy").setup({
+  -- THEME: One Dark Pro
+  {
+    "olimorris/onedarkpro.nvim",
+    priority = 1000,
+    config = function()
+      vim.cmd("colorscheme onedark") -- This sets your "Night Flat" vibe
+    end
+  },
+
+  -- TELESCOPE: The Fuzzy Finder
+  {
+    'nvim-telescope/telescope.nvim', tag = '0.1.5',
+    dependencies = { 'nvim-lua/plenary.nvim' }
+  }
+})
+
+-- 3. TELESCOPE KEYBINDS (The commands you wanted)
+local builtin = require('telescope.builtin')
+vim.keymap.set('n', '<leader>ff', builtin.find_files, {}) -- Find files
+vim.keymap.set('n', '<leader>fg', builtin.live_grep, {})  -- Search text
