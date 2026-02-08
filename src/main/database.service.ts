@@ -63,7 +63,16 @@ export function seedDatabase() {
             const messagesPerChat = Math.floor(Math.random() * 50) + 100; // 100-150 messages per chat
             let lastMessageAt = 0;
 
-            // Generate messages for this chat
+            // Insert chat FIRST (before messages to satisfy foreign key)
+            const title = faker.company.name();
+            const unreadCount = Math.floor(Math.random() * 10);
+            
+            // Calculate last message timestamp
+            lastMessageAt = now - 60000; // Start from 1 minute ago
+            
+            insertChatstmt.run(chatId, title, lastMessageAt, unreadCount);
+
+            // Now insert messages for this chat
             for(let i = 0; i < messagesPerChat; i++) {
                 const ts = now - (messagesPerChat - i) * 60000; // Space messages 1 minute apart
                 const sender = faker.person.fullName();
@@ -74,10 +83,8 @@ export function seedDatabase() {
                 messageId++;
             }
 
-            // Insert chat with last message timestamp
-            const title = faker.company.name();
-            const unreadCount = Math.floor(Math.random() * 10);
-            insertChatstmt.run(chatId, title, lastMessageAt, unreadCount);
+            // Update chat with actual last message timestamp
+            database.prepare('UPDATE chats SET lastMessageAt = ? WHERE id = ?').run(lastMessageAt, chatId);
         }
      })()
 

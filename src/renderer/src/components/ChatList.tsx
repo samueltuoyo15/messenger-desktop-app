@@ -1,6 +1,5 @@
 import React, { memo } from 'react';
-import { FixedSizeList as List } from 'react-window';
-import { Chat } from '../../shared/types';
+import { Chat } from '../types';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { selectChat } from '../store/chatsSlice';
 import './ChatList.css';
@@ -65,38 +64,21 @@ export const ChatList: React.FC<ChatListProps> = ({ chats, onLoadMore }) => {
         await window.api.markChatAsRead(chatId);
     };
 
-    const Row = ({ index, style }: { index: number; style: React.CSSProperties }) => {
-        const chat = chats[index];
-
-        // Trigger load more when near the end
-        if (index === chats.length - 5) {
-            onLoadMore();
-        }
-
-        return (
-            <div style={style}>
-                <ChatListItem
-                    chat={chat}
-                    isSelected={selectedChatId === chat.id}
-                    onClick={() => handleChatClick(chat.id)}
-                />
-            </div>
-        );
-    };
-
     return (
         <div className="chat-list-container">
             <div className="chat-list-header">
                 <h2>Messages</h2>
             </div>
-            <List
-                height={window.innerHeight - 120}
-                itemCount={chats.length}
-                itemSize={72}
-                width="100%"
-            >
-                {Row}
-            </List>
+            <div className="chat-list-scroll">
+                {chats.map((chat) => (
+                    <ChatListItem
+                        key={chat.id}
+                        chat={chat}
+                        isSelected={selectedChatId === chat.id}
+                        onClick={() => handleChatClick(chat.id)}
+                    />
+                ))}
+            </div>
         </div>
     );
 };

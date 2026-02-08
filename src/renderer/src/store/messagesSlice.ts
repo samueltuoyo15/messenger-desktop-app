@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Message } from '../../shared/types';
+import { Message } from '../types';
 
 interface MessagesState {
   messagesByChatId: Record<number, Message[]>;

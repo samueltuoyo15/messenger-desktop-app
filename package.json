@@ -31,7 +31,6 @@
     "better-sqlite3": "^12.6.2",
     "electron-updater": "^6.3.9",
     "react-redux": "^9.2.0",
-    "react-window": "^2.2.5",
     "ws": "^8.19.0"
   },
   "devDependencies": {

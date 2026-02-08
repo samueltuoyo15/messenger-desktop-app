@@ -1,6 +1,5 @@
-import React, { memo, useEffect, useState } from 'react';
-import { FixedSizeList as List } from 'react-window';
-import { Message } from '../../shared/types';
+import React, { memo, useState } from 'react';
+import { Message } from '../types';
 import './MessageView.css';
 
 interface MessageViewProps {
@@ -55,17 +54,6 @@ export const MessageView: React.FC<MessageViewProps> = ({
 
     const displayMessages = isSearching ? searchResults : messages;
 
-    const Row = ({ index, style }: { index: number; style: React.CSSProperties }) => {
-        const message = displayMessages[index];
-        const isOwn = message.sender === 'You'; // Simplified for demo
-
-        return (
-            <div style={style}>
-                <MessageItem message={message} isOwn={isOwn} />
-            </div>
-        );
-    };
-
     if (!chatId) {
         return (
             <div className="message-view-empty">
@@ -98,20 +86,19 @@ export const MessageView: React.FC<MessageViewProps> = ({
                 </div>
             </div>
 
-            <div className="message-list">
+            <div className="message-list-scroll">
                 {hasMore && !isSearching && (
                     <button className="load-more-btn" onClick={onLoadMore}>
                         Load older messages
                     </button>
                 )}
-                <List
-                    height={window.innerHeight - 180}
-                    itemCount={displayMessages.length}
-                    itemSize={100}
-                    width="100%"
-                >
-                    {Row}
-                </List>
+                {displayMessages.map((message) => (
+                    <MessageItem
+                        key={message.id}
+                        message={message}
+                        isOwn={message.sender === 'You'}
+                    />
+                ))}
             </div>
         </div>
     );
